@@ -38,7 +38,7 @@ injectGlobal`
     font-size: 1.6rem;
   }
   body {
-    color: ${props => props.theme.black};
+    color: #111111;
     font-family: sans-serif;
     font-size: 1.6rem;
     font-weight: 600;
