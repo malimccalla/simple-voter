@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { injectGlobal } from 'styled-components';
 import React, { Component } from 'react';
 
 import PollCard from '../components/PollCard';
@@ -16,32 +16,20 @@ class App extends Component {
   handleNoVote = () => console.log('voted no');
 
   render() {
+    const question = 'Wow! This app is super neat right?';
+
     return [
-      <PollCard>
-        <DeletePollButton onClick={this.handleDeletePollClick}>
-          +
-        </DeletePollButton>
-        <Title>Simple Poll</Title>
-        <Question>Wow! This app is super neat right?</Question>
-        <div>
-          <VoteButton onClick={this.handleYesVote}>Sure</VoteButton>
-          <VoteButton onClick={this.handleNoVote}>No, not really.</VoteButton>
-        </div>
-      </PollCard>,
+      <PollCard
+        onYesVote={this.handleYesVote}
+        onNoVote={this.handleNoVote}
+        question={question}
+      />,
       <CreatePollButton onClick={this.handleCreatePollClick}>
         +
       </CreatePollButton>,
     ];
   }
 }
-
-export default App;
-
-const Title = styled.h1`
-  font-size: 4.8rem;
-  padding-bottom: 4rem;
-  font-weight: 900;
-`;
 
 const CreatePollButton = styled.button`
   height: 6rem;
@@ -74,50 +62,35 @@ const CreatePollButton = styled.button`
   }
 `;
 
-const DeletePollButton = styled.button`
-  border: none;
-  outline: none;
-  position: absolute;
-  background-color: transparent;
-
-  color: #999;
-
-  font-size: 4rem;
-  top: 2rem;
-  left: 3.5rem;
-
-  transform: rotate(45deg);
-
-  transition: 100ms all;
-
-  &:hover {
-    color: #000;
-    cursor: pointer;
+injectGlobal`
+  *,
+  *::before,
+  *::after {
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+    font-family: inherit;
+    box-sizing: inherit;
+    font-weight: inherit;
+  }
+  ul {
+    list-style: none;
+  }
+  html {
+    font-size: 62.5%;
+  }
+  button {
+    font-family: sans-serif;
+    font-size: 1.6rem;
+  }
+  body {
+    color: #111111;
+    font-family: sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    box-sizing: border-box;
   }
 `;
 
-const VoteButton = styled.button`
-  height: 6rem;
-  width: 18rem;
-  color: white;
-  border-radius: 6px;
-  margin-right: 3rem;
-  border: none;
-  font-weight: 400;
-  font-size: 1.4rem;
-
-  background-color: #ee5150;
-
-  transition: 100ms all;
-
-  &:hover {
-    cursor: pointer;
-    background-color: #ef3832;
-  }
-`;
-
-const Question = styled.p`
-  font-size: 3.2rem;
-  font-weight: 300;
-  padding-bottom: 13rem;
-`;
+export default App;

@@ -1,6 +1,17 @@
-import styled, { injectGlobal } from 'styled-components';
+import styled from 'styled-components';
 
-export default styled.div`
+export default ({ onYesVote, onNoVote, question }) => (
+  <PollCard>
+    <DeletePollButton onClick={this.handleDeletePollClick}>+</DeletePollButton>
+    <Question>{question}</Question>
+    <div>
+      <VoteButton onClick={onYesVote}>Sure</VoteButton>
+      <VoteButton onClick={onNoVote}>No, not really.</VoteButton>
+    </div>
+  </PollCard>
+);
+
+const PollCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -17,33 +28,52 @@ export default styled.div`
   margin: 3rem auto;
 `;
 
-injectGlobal`
-  *,
-  *::before,
-  *::after {
-    padding: 0;
-    margin: 0;
-    vertical-align: middle;
-    font-family: inherit;
-    box-sizing: inherit;
-    font-weight: inherit;
+const Question = styled.p`
+  font-size: 4.4rem;
+  padding-bottom: 7.5rem;
+  max-width: 65rem;
+  font-weight: 900;
+`;
+
+const DeletePollButton = styled.button`
+  border: none;
+  outline: none;
+  position: absolute;
+  background-color: transparent;
+
+  color: #999;
+
+  font-size: 5rem;
+  top: 1.5rem;
+  left: 3.5rem;
+  font-weight: 300;
+
+  transform: rotate(45deg);
+
+  transition: 100ms all;
+
+  &:hover {
+    color: #000;
+    cursor: pointer;
   }
-  ul {
-    list-style: none;
-  }
-  html {
-    font-size: 62.5%;
-  }
-  button {
-    font-family: sans-serif;
-    font-size: 1.6rem;
-  }
-  body {
-    color: #111111;
-    font-family: sans-serif;
-    font-size: 1.6rem;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    box-sizing: border-box;
+`;
+
+const VoteButton = styled.button`
+  height: 6rem;
+  width: 18rem;
+  color: white;
+  border-radius: 6px;
+  margin-right: 3rem;
+  border: none;
+  font-weight: 400;
+  font-size: 1.4rem;
+
+  background-color: #ee5150;
+
+  transition: 100ms all;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #ef3832;
   }
 `;
