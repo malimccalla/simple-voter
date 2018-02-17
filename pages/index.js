@@ -12,6 +12,9 @@ class App extends Component {
     console.log('delete poll');
   };
 
+  handleYesVote = () => console.log('voted yes');
+  handleNoVote = () => console.log('voted no');
+
   render() {
     return [
       <PollCard>
@@ -19,10 +22,10 @@ class App extends Component {
           +
         </DeletePollButton>
         <Title>Simple Poll</Title>
-        <Question>This is a question. Do you agree?</Question>
+        <Question>Wow! This app is super neat right?</Question>
         <div>
-          <button>yes</button>
-          <button>no</button>
+          <VoteButton onClick={this.handleYesVote}>Sure</VoteButton>
+          <VoteButton onClick={this.handleNoVote}>No, not really.</VoteButton>
         </div>
       </PollCard>,
       <CreatePollButton onClick={this.handleCreatePollClick}>
@@ -90,6 +93,26 @@ const DeletePollButton = styled.button`
   &:hover {
     color: #000;
     cursor: pointer;
+  }
+`;
+
+const VoteButton = styled.button`
+  height: 6rem;
+  width: 18rem;
+  color: white;
+  border-radius: 6px;
+  margin-right: 3rem;
+  border: none;
+  font-weight: 400;
+  font-size: 1.4rem;
+
+  background-color: #ee5150;
+
+  transition: 100ms all;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #ef3832;
   }
 `;
 
