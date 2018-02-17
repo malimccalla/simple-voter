@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 
 import Poll from '../ethereum/poll';
 
-export default ({ onYesVote, onNoVote, question }) => (
+export default ({ onYesVote, onNoVote, onDelete, question }) => (
   <PollCard>
-    <DeletePollButton onClick={this.handleDeletePollClick}>+</DeletePollButton>
+    <DeletePollButton onClick={onDelete}>+</DeletePollButton>
     <Question>{question}</Question>
     <div>
       <VoteButton onClick={onYesVote}>Yes.</VoteButton>

@@ -1,6 +1,7 @@
 import styled, { injectGlobal } from 'styled-components';
 import React, { Component } from 'react';
 
+import web3 from '../ethereum/web3';
 import pollFactoryInstance from '../ethereum/pollFactory';
 import pollInstance from '../ethereum/poll';
 import PollCard from '../components/PollCard';
@@ -17,6 +18,7 @@ class App extends Component {
         .call();
 
       return {
+        address,
         creator: poll[0],
         question: poll[1],
         yesVotesCount: poll[2],
@@ -33,20 +35,44 @@ class App extends Component {
     console.log('create poll');
   };
 
-  deletePoll = () => console.log('delete poll');
-  handleYesVote = () => console.log('voted yes');
-  handleNoVote = () => console.log('voted no');
+  handleDelete = async (creator, index) => {
+    const [account] = await web3.eth.getAccounts();
+    console.log(creator, account);
+
+    if (creator !== account) {
+      console.warn(`only the creator (${creator}) can delete this poll`);
+    } else {
+      console.log('Delete poll');
+    }
+  };
+
+  handleYesVote = async address => {
+    const [account] = await web3.eth.getAccounts();
+
+    await pollInstance(address)
+      .methods.voteYes()
+      .send({ from: account });
+  };
+
+  handleNoVote = async address => {
+    const [account] = await web3.eth.getAccounts();
+
+    await pollInstance(address)
+      .methods.voteNo()
+      .send({ from: account });
+  };
 
   render() {
     const { polls } = this.props;
+    console.log(polls);
 
     const pollCards = polls.map((poll, i) => (
       <PollCard
-        key={i}
-        onYesVote={this.handleYesVote}
-        onNoVote={this.handleNoVote}
+        key={poll.address}
         question={poll.question}
-        onDelete={() => this.handleDelete(i)}
+        onYesVote={() => this.handleYesVote(poll.address)}
+        onNoVote={() => this.handleNoVote(poll.address)}
+        onDelete={() => this.handleDelete(poll.creator, i)}
       />
     ));
 
