@@ -21,7 +21,7 @@ beforeEach(async () => {
     .send({ from: accounts[0], gas: '1000000' });
 
   await pollFactory.methods
-    .createPoll('Is this a great test question?')
+    .createPoll('Is this a great test poll?')
     .send({ from: accounts[0], gas: '1000000' });
 
   [pollAddress] = await pollFactory.methods.getDeployedPolls().call();
@@ -30,6 +30,17 @@ beforeEach(async () => {
     JSON.parse(compiledPoll.interface),
     pollAddress
   );
+});
+
+describe('PollFactory', () => {
+  it('stores deployed polls', async () => {
+    await pollFactory.methods
+      .createPoll('Is this a great 2nd test poll?')
+      .send({ from: accounts[0], gas: '1000000' });
+
+    const deployedPolls = await pollFactory.methods.getDeployedPolls().call();
+    assert.equal(2, deployedPolls.length);
+  });
 });
 
 describe('Poll', () => {
@@ -48,7 +59,7 @@ describe('Poll', () => {
   it('has a question associated to it', async () => {
     const question = await poll.methods.question().call();
 
-    assert.equal('Is this a great test question?', question);
+    assert.equal('Is this a great test poll?', question);
   });
 
   it('allows someone to vote yes and marks them as voter', async () => {

@@ -1,29 +1,40 @@
 import styled, { injectGlobal } from 'styled-components';
 import React, { Component } from 'react';
 
+import pollFactory from '../ethereum/pollFactory';
 import PollCard from '../components/PollCard';
 
 class App extends Component {
+  static async getInitialProps() {
+    const polls = await pollFactory.methods.getDeployedPolls().call();
+    console.log('polls', polls);
+    return { polls };
+  }
+
   handleCreatePollClick = () => {
     console.log('create poll');
   };
 
-  handleDeletePollClick = () => {
-    console.log('delete poll');
-  };
-
+  deletePoll = () => console.log('delete poll');
   handleYesVote = () => console.log('voted yes');
   handleNoVote = () => console.log('voted no');
 
   render() {
     const question = 'Wow! This app is super neat right?';
+    console.log(this.props);
+    const { polls } = this.props;
 
-    return [
+    const pollCards = polls.map((poll, i) => (
       <PollCard
         onYesVote={this.handleYesVote}
         onNoVote={this.handleNoVote}
         question={question}
-      />,
+        onDelete={() => this.handleDelete(i)}
+      />
+    ));
+
+    return [
+      ...pollCards,
       <CreatePollButton onClick={this.handleCreatePollClick}>
         +
       </CreatePollButton>,
