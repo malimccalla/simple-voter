@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "next",
-    "test": "mocha ./ethereum/test"
+    "test": "mocha ./ethereum/test --watch"
   },
   "dependencies": {
     "mocha": "^5.0.1",
