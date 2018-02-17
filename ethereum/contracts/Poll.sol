@@ -1,15 +1,28 @@
 pragma solidity ^0.4.19;
 
-contract SimplePoll {
+contract PollFactory {
+    address[] public deployedPolls;
+
+    function createPoll(string question) public {
+        address newPoll = new Poll(question, msg.sender);
+        deployedPolls.push(newPoll);
+    }
+
+    function getPolls() public view returns (address[]) {
+        return deployedPolls;
+    }
+}
+
+contract Poll {
     mapping(address => bool) public voters;
     address public creator;
     uint public yesVotesCount = 0;
     uint public noVotesCount = 0;
     string public question;
 
-    function SimplePoll(string _question) public {
+    function Poll(string _question, address _creator) public {
         question = _question;
-        creator = msg.sender;
+        creator = _creator;
     }
 
     modifier notVoted() {
