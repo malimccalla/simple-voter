@@ -8,7 +8,7 @@ contract PollFactory {
         deployedPolls.push(newPoll);
     }
 
-    function getPolls() public view returns (address[]) {
+    function getDeployedPolls() public view returns (address[]) {
         return deployedPolls;
     }
 }

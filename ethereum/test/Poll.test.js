@@ -20,11 +20,74 @@ beforeEach(async () => {
     .deploy({ data: compiledPollFactory.bytecode })
     .send({ from: accounts[0], gas: '1000000' });
 
-  console.log('factory', pollFactory);
+  await pollFactory.methods
+    .createPoll('Is this a great test question?')
+    .send({ from: accounts[0], gas: '1000000' });
+
+  [pollAddress] = await pollFactory.methods.getDeployedPolls().call();
+
+  poll = await new web3.eth.Contract(
+    JSON.parse(compiledPoll.interface),
+    pollAddress
+  );
 });
 
 describe('Poll', () => {
-  it('runs tests', () => {
-    assert.ok(true);
+  it('deploys a factory and poll', () => {
+    assert.ok(pollFactory.options.address);
+    assert.ok(poll.options.address);
+  });
+
+  it('marks transaction sender as creator', async () => {
+    const creator = await poll.methods.creator().call();
+
+    assert.equal(accounts[0], creator);
+    assert.notEqual(accounts[1], creator);
+  });
+
+  it('has a question associated to it', async () => {
+    const question = await poll.methods.question().call();
+
+    assert.equal('Is this a great test question?', question);
+  });
+
+  it('allows someone to vote yes and marks them as voter', async () => {
+    await poll.methods.voteYes().send({ from: accounts[0], gas: '1000000' });
+    const isVoter = await poll.methods.voters(accounts[0]).call();
+
+    assert.ok(isVoter);
+  });
+
+  it('allows someone to vote no and marks them as voter', async () => {
+    await poll.methods.voteNo().send({ from: accounts[0], gas: '1000000' });
+    const isVoter = await poll.methods.voters(accounts[0]).call();
+
+    assert.ok(isVoter);
+  });
+
+  it('increments yes and no vote counters', async () => {
+    await poll.methods.voteYes().send({ from: accounts[0], gas: '1000000' });
+    await poll.methods.voteNo().send({ from: accounts[1], gas: '1000000' });
+    await poll.methods.voteYes().send({ from: accounts[2], gas: '1000000' });
+    await poll.methods.voteNo().send({ from: accounts[3], gas: '1000000' });
+    await poll.methods.voteNo().send({ from: accounts[4], gas: '1000000' });
+
+    const yesVotesCount = await poll.methods.yesVotesCount().call();
+    const noVotesCount = await poll.methods.noVotesCount().call();
+
+    assert.equal(2, yesVotesCount);
+    assert.equal(3, noVotesCount);
+  });
+
+  it('doesnt allow the same account to vote twice', async () => {
+    try {
+      await poll.methods.voteYes().send({ from: accounts[1], gas: '1000000' });
+      await poll.methods.voteNo().send({ from: accounts[1], gas: '1000000' });
+      // if we get to here test should fail
+      assert.ok(false);
+    } catch (e) {
+      // assert that an error occurred
+      assert.ok(true);
+    }
   });
 });
