@@ -12,21 +12,21 @@ class App extends Component {
       .getDeployedPolls()
       .call();
 
-    const pollsPromise = pollAddresses.map(async address => {
-      const poll = await pollInstance(address)
-        .methods.getDetails()
-        .call();
+    const polls = await Promise.all(
+      pollAddresses.map(async address => {
+        const poll = await pollInstance(address)
+          .methods.getDetails()
+          .call();
 
-      return {
-        address,
-        creator: poll[0],
-        question: poll[1],
-        yesVotesCount: poll[2],
-        noVotesCount: poll[3],
-      };
-    });
-
-    const polls = await Promise.all(pollsPromise);
+        return {
+          address,
+          creator: poll[0],
+          question: poll[1],
+          yesVotesCount: poll[2],
+          noVotesCount: poll[3],
+        };
+      })
+    );
 
     return { polls };
   }
@@ -64,6 +64,18 @@ class App extends Component {
       .send({ from: account });
   };
 
+  getVotedStatus = async address => {
+    const [account] = await web3.eth.getAccounts();
+
+    const status = await pollInstance(address)
+      .methods.voters(account)
+      .call();
+
+    console.log(status);
+
+    return status;
+  };
+
   render() {
     const { polls } = this.props;
     console.log(polls);
@@ -72,6 +84,7 @@ class App extends Component {
       <PollCard
         key={poll.address}
         question={poll.question}
+        hasVoted={this.getVotedStatus(poll.address)}
         onYesVote={() => this.handleYesVote(poll.address)}
         onNoVote={() => this.handleNoVote(poll.address)}
         onDelete={() => this.handleDelete(poll.creator, i)}
