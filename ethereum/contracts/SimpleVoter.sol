@@ -4,7 +4,12 @@ contract SimpleVoter {
     mapping(address => bool) public voters;
     uint public yesVotesCount = 0;
     uint public noVotesCount = 0;
+    string public question;
 
+    function SimpleVoter(string _question) public {
+        question = _question;
+    }
+    
     modifier notVoted() {
         require(!voters[msg.sender]);
         _;
