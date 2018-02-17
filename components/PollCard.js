@@ -4,6 +4,7 @@ export default styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
 
   border-radius: 6px;
   background-color: #f1f1f1;
