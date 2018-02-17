@@ -40,7 +40,9 @@ class App extends Component {
     console.log(creator, account);
 
     if (creator !== account) {
-      console.warn(`only the creator (${creator}) can delete this poll`);
+      window.alert(
+        `Only the creator of this poll can delete it.\n\nCreator: ${creator}\nYou: ${account}`
+      );
     } else {
       console.log('Delete poll');
     }
