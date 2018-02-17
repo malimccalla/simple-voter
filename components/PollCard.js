@@ -1,12 +1,15 @@
 import styled from 'styled-components';
+import React, { Component } from 'react';
+
+import Poll from '../ethereum/poll';
 
 export default ({ onYesVote, onNoVote, question }) => (
   <PollCard>
     <DeletePollButton onClick={this.handleDeletePollClick}>+</DeletePollButton>
     <Question>{question}</Question>
     <div>
-      <VoteButton onClick={onYesVote}>Sure</VoteButton>
-      <VoteButton onClick={onNoVote}>No, not really.</VoteButton>
+      <VoteButton onClick={onYesVote}>Yes.</VoteButton>
+      <VoteButton onClick={onNoVote}>No.</VoteButton>
     </div>
   </PollCard>
 );
@@ -68,12 +71,18 @@ const VoteButton = styled.button`
   font-weight: 400;
   font-size: 1.4rem;
 
+  outline: none;
+
   background-color: #ee5150;
 
-  transition: 100ms all;
+  transition: 300ms all;
 
   &:hover {
     cursor: pointer;
-    background-color: #ef3832;
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(1);
   }
 `;
