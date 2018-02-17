@@ -2,11 +2,13 @@ import styled, { injectGlobal } from 'styled-components';
 
 export default styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
 
   border-radius: 6px;
   background-color: #f1f1f1;
+
+  padding: 13rem;
 
   height: calc(100vh - 6rem);
   width: calc(100vw - 6rem);
