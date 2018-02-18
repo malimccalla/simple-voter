@@ -80,24 +80,52 @@ export default class extends Component {
         <DeletePollButton onClick={this.onDelete}>+</DeletePollButton>
         <Question>{question}</Question>
         {hasVoted ? (
-          <div
-          >{`${yesButtonText}: ${yesVotesCount}, ${noButtonText}: ${noVotesCount}`}</div>
+          <Results>
+            <Result>{`${yesButtonText} - ${yesVotesCount}`}</Result>
+            <Result>{`${noButtonText} - ${noVotesCount}`}</Result>
+          </Results>
         ) : (
-          <div>
+          <Buttons>
             <VoteButton onClick={this.onYesVote}>{yesButtonText}</VoteButton>
             <VoteButton onClick={this.onNoVote}>{noButtonText}</VoteButton>
-          </div>
+          </Buttons>
         )}
-        {mining ? <div>Please wait while we handle your request...</div> : null}
+        {mining ? (
+          <Status>Please wait while your request is handled...</Status>
+        ) : null}
       </PollCard>
     );
   }
 }
 
+const Pie = () => (
+  <VictoryPie
+    data={[{ x: 'Cats', y: 35 }, { x: 'Dogs', y: 40 }, { x: 'Birds', y: 55 }]}
+  />
+);
+
+const Results = styled.div`
+  display: block;
+`;
+
+const Buttons = styled.div``;
+
+const Status = styled.span`
+  font-size: 1.4rem;
+  margin-top: 2rem;
+
+  font-weight: 300;
+`;
+
+const Result = styled.div`
+  padding-bottom: 1rem;
+  font-weight: 300;
+  font-size: 2rem;
+`;
+
 const PollCard = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   position: relative;
 
   border-radius: 6px;
@@ -113,7 +141,7 @@ const PollCard = styled.div`
 
 const Question = styled.p`
   font-size: 4.4rem;
-  padding-bottom: 7.5rem;
+  margin: 7.5rem 0;
   max-width: 65rem;
   font-weight: 900;
 `;
