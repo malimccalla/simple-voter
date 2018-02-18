@@ -3,25 +3,28 @@ import styled from 'styled-components';
 import Modal from 'react-modal';
 
 class CreatePollModal extends Component {
-  state = { question: '', noButtonText: '', yesButtonText: '' };
+  state = { question: '', yesButtonText: '', noButtonText: '' };
 
   render() {
+    const { question, yesButtonText, noButtonText } = this.state;
+    const { close, visible, createNewPoll } = this.props;
+
     return (
       <Modal
         contentLabel="loginModal"
         shouldCloseOnOverlayClick
-        onRequestClose={this.props.close}
-        isOpen={this.props.visible}
+        onRequestClose={close}
+        isOpen={visible}
       >
         <Content>
-          <Close onClick={this.props.close}>+</Close>
+          <Close onClick={close}>+</Close>
           <Title>Create New Poll</Title>
           <InputGroup width="100%">
             <Label>Question*</Label>
             <Input
               maxLength={50}
               onChange={e => this.setState({ question: e.target.value })}
-              value={this.state.question}
+              value={question}
               placeholder="Ask a question"
             />
           </InputGroup>
@@ -32,7 +35,7 @@ class CreatePollModal extends Component {
                 maxLength={20}
                 placeholder="Yes"
                 onChange={e => this.setState({ yesButtonText: e.target.value })}
-                value={this.state.yesButtonText}
+                value={yesButtonText}
               />
             </InputGroup>
             <InputGroup width="48%">
@@ -41,12 +44,18 @@ class CreatePollModal extends Component {
                 maxLength={20}
                 placeholder="No"
                 onChange={e => this.setState({ noButtonText: e.target.value })}
-                value={this.state.noButtonText}
+                value={noButtonText}
               />
             </InputGroup>
           </ButtonInputs>
           <Buttons>
-            <Button>Create Poll</Button>
+            <Button
+              onClick={() =>
+                createNewPoll(question, yesButtonText, noButtonText)
+              }
+            >
+              Create Poll
+            </Button>
           </Buttons>
         </Content>
       </Modal>
@@ -109,6 +118,8 @@ const Button = styled.button`
 const Title = styled.h2`
   padding-bottom: 3.5rem;
   font-size: 2.8rem;
+
+  font-weight: 800;
 `;
 
 const ButtonInputs = styled.div`

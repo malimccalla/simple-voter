@@ -9,14 +9,18 @@ import CreatePollModal from '../components/CreatePollModal';
 import PollCard from '../components/PollCard';
 
 class App extends Component {
-  state = { modalVisible: false };
+  state = { modalVisible: false, polls: [] };
 
-  static async getInitialProps() {
-    const polls = await pollFactoryInstance.methods.getDeployedPolls().call();
-    return { polls };
+  componentDidMount() {
+    this.fetchPolls();
   }
 
-  handleDelete = async (creator, index) => {
+  async fetchPolls() {
+    const polls = await pollFactoryInstance.methods.getDeployedPolls().call();
+    this.setState({ polls });
+  }
+
+  handleDelete = async (creator, i) => {
     const [account] = await web3.eth.getAccounts();
     console.log(creator, account);
 
@@ -25,7 +29,15 @@ class App extends Component {
         `Only the creator of this poll can delete it.\n\nCreator: ${creator}\nYou: ${account}`
       );
     } else {
-      console.log('Delete poll');
+      const result = window.confirm(
+        'Are you sure you want to delete this poll?'
+      );
+
+      if (result) {
+        window.alert(
+          "Well this is awkward... Since a blockchain is immutable you can't technically delete a poll."
+        );
+      }
     }
   };
 
@@ -36,17 +48,36 @@ class App extends Component {
       .methods.voters(account)
       .call();
 
-    console.log(status);
-
     return status;
   };
 
-  render() {
-    const { polls } = this.props;
+  createNewPoll = async (question, yesButtonText, noButtonText) => {
+    console.log(question, yesButtonText, noButtonText);
+    const [account] = await web3.eth.getAccounts();
 
+    try {
+      await pollFactoryInstance.methods
+        .createPoll(question, yesButtonText, noButtonText)
+        .send({ from: account });
+
+      this.fetchPolls();
+      this.setState({ modalVisible: false });
+    } catch (e) {
+      console.log('Something went wrong :(');
+    }
+  };
+
+  render() {
+    const { polls } = this.state;
     return (
       <div>
-        {polls.map(address => <PollCard key={address} address={address} />)}
+        {polls.map(address => (
+          <PollCard
+            handleDelete={this.handleDelete}
+            key={address}
+            address={address}
+          />
+        ))}
         <CreatePollButton
           key="key"
           onClick={() => this.setState({ modalVisible: true })}
@@ -56,6 +87,7 @@ class App extends Component {
         <CreatePollModal
           close={() => this.setState({ modalVisible: false })}
           visible={this.state.modalVisible}
+          createNewPoll={this.createNewPoll}
         />
       </div>
     );
@@ -111,12 +143,12 @@ injectGlobal`
     font-size: 62.5%;
   }
   button {
-    font-family: sans-serif;
+    font-family: 'Muli', sans-serif;
     font-size: 1.6rem;
   }
   body {
     color: #111111;
-    font-family: sans-serif;
+    font-family: 'Muli', sans-serif;
     font-size: 1.6rem;
     font-weight: 600;
     letter-spacing: 0.4px;

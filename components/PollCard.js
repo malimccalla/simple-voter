@@ -77,7 +77,9 @@ export default class extends Component {
 
     return (
       <PollCard>
-        <DeletePollButton onClick={this.onDelete}>+</DeletePollButton>
+        <DeletePollButton onClick={() => this.props.handleDelete(creator)}>
+          +
+        </DeletePollButton>
         <Question>{question}</Question>
         {hasVoted ? (
           <Results>
@@ -133,7 +135,7 @@ const PollCard = styled.div`
 
   padding: 13rem;
 
-  height: calc(100vh - 6rem);
+  height: calc(95vh - 6rem);
   width: calc(100vw - 6rem);
 
   margin: 3rem auto;
@@ -143,7 +145,7 @@ const Question = styled.p`
   font-size: 4.4rem;
   margin: 7.5rem 0;
   max-width: 65rem;
-  font-weight: 900;
+  font-weight: 800;
 `;
 
 const DeletePollButton = styled.button`

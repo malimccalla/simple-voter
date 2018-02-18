@@ -17,6 +17,10 @@ export default class MyDocument extends Document {
     return (
       <html lang="en">
         <Head>
+          <link
+            href="https://fonts.googleapis.com/css?family=Muli:400,600,700,800,900"
+            rel="stylesheet"
+          />
           <title>Simple Voter</title>
           {this.props.styleTags}
         </Head>
