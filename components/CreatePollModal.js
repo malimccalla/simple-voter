@@ -10,9 +10,15 @@ class CreatePollModal extends Component {
     this.props.close();
   };
 
+  handleCreateNewPoll = () => {
+    const { question, yesButtonText, noButtonText } = this.state;
+    this.props.createNewPoll(question, yesButtonText, noButtonText);
+    this.setState({ question: '', yesButtonText: '', noButtonText: '' });
+  };
+
   render() {
     const { question, yesButtonText, noButtonText } = this.state;
-    const { visible, createNewPoll, mining } = this.props;
+    const { visible, mining } = this.props;
 
     return (
       <Modal
@@ -56,15 +62,16 @@ class CreatePollModal extends Component {
           <Buttons>
             <Button
               disabled={!question || !yesButtonText || !noButtonText}
-              onClick={() =>
-                createNewPoll(question, yesButtonText, noButtonText)
-              }
+              onClick={this.handleCreateNewPoll}
             >
               Create Poll
             </Button>
           </Buttons>
           {mining ? (
-            <Status>Please wait while your request is handled...</Status>
+            <Status>
+              Please wait while your request is handled... This modal will close
+              automatically once the current block has been mined.
+            </Status>
           ) : null}
         </Content>
       </Modal>
@@ -107,6 +114,7 @@ const Label = styled.label`
 
 const Buttons = styled.div`
   display: flex;
+  margin-bottom: 2rem;
 `;
 
 const InputGroup = styled.div`

@@ -93,7 +93,10 @@ export default class extends Component {
           </Buttons>
         )}
         {mining ? (
-          <Status>Please wait while your request is handled...</Status>
+          <Status>
+            Please wait while your request is handled... You will be able to see
+            the results of this poll once the current block has been mined
+          </Status>
         ) : null}
       </PollCard>
     );
@@ -115,6 +118,7 @@ const Buttons = styled.div``;
 const Status = styled.span`
   font-size: 1.4rem;
   margin-top: 2rem;
+  width: 50rem;
 
   font-weight: 300;
 `;
