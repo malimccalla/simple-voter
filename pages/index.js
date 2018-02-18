@@ -8,26 +8,7 @@ import PollCard from '../components/PollCard';
 
 class App extends Component {
   static async getInitialProps() {
-    const pollAddresses = await pollFactoryInstance.methods
-      .getDeployedPolls()
-      .call();
-
-    const polls = await Promise.all(
-      pollAddresses.map(async address => {
-        const poll = await pollInstance(address)
-          .methods.getDetails()
-          .call();
-
-        return {
-          address,
-          creator: poll[0],
-          question: poll[1],
-          yesVotesCount: poll[2],
-          noVotesCount: poll[3],
-        };
-      })
-    );
-
+    const polls = await pollFactoryInstance.methods.getDeployedPolls().call();
     return { polls };
   }
 
@@ -48,22 +29,6 @@ class App extends Component {
     }
   };
 
-  handleYesVote = async address => {
-    const [account] = await web3.eth.getAccounts();
-
-    await pollInstance(address)
-      .methods.voteYes()
-      .send({ from: account });
-  };
-
-  handleNoVote = async address => {
-    const [account] = await web3.eth.getAccounts();
-
-    await pollInstance(address)
-      .methods.voteNo()
-      .send({ from: account });
-  };
-
   getVotedStatus = async address => {
     const [account] = await web3.eth.getAccounts();
 
@@ -80,15 +45,8 @@ class App extends Component {
     const { polls } = this.props;
     console.log(polls);
 
-    const pollCards = polls.map((poll, i) => (
-      <PollCard
-        key={poll.address}
-        question={poll.question}
-        hasVoted={this.getVotedStatus(poll.address)}
-        onYesVote={() => this.handleYesVote(poll.address)}
-        onNoVote={() => this.handleNoVote(poll.address)}
-        onDelete={() => this.handleDelete(poll.creator, i)}
-      />
+    const pollCards = polls.map(address => (
+      <PollCard key={address} address={address} />
     ));
 
     return [

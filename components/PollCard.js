@@ -1,22 +1,98 @@
 import styled from 'styled-components';
 import React, { Component } from 'react';
 
-import Poll from '../ethereum/poll';
+import pollInstance from '../ethereum/poll';
+import web3 from '../ethereum/web3';
 
-export default ({ onYesVote, onNoVote, onDelete, question, hasVoted }) => (
-  <PollCard>
-    <DeletePollButton onClick={onDelete}>+</DeletePollButton>
-    <Question>{question}</Question>
-    {hasVoted ? (
-      <div>You've already voted on this poll</div>
-    ) : (
-      <div>
-        <VoteButton onClick={onYesVote}>Yes.</VoteButton>
-        <VoteButton onClick={onNoVote}>No.</VoteButton>
-      </div>
-    )}
-  </PollCard>
-);
+export default class extends Component {
+  state = { loading: true };
+
+  componentDidMount() {
+    this.refetchDetails();
+  }
+
+  async refetchDetails() {
+    const [account] = await web3.eth.getAccounts();
+
+    const poll = await pollInstance(this.props.address)
+      .methods.getDetails()
+      .call({ from: account });
+
+    this.setState({
+      loading: false,
+      mining: false,
+      address: this.props.address,
+      creator: poll[0],
+      question: poll[1],
+      yesButtonText: poll[2],
+      noButtonText: poll[3],
+      yesVotesCount: poll[4],
+      noVotesCount: poll[5],
+      hasVoted: poll[6],
+    });
+  }
+
+  onYesVote = async () => {
+    this.setState({ ...this.state, mining: true });
+
+    try {
+      const [account] = await web3.eth.getAccounts();
+      await pollInstance(this.state.address)
+        .methods.voteYes()
+        .send({ from: account });
+    } catch (e) {
+      console.log('ERROR In eth stuff', e);
+    }
+
+    this.refetchDetails();
+  };
+
+  onNoVote = async () => {
+    this.setState({ ...this.state, mining: true });
+
+    try {
+      const [account] = await web3.eth.getAccounts();
+      await pollInstance(this.state.address)
+        .methods.voteNo()
+        .send({ from: account });
+    } catch (e) {
+      console.log('ERROR In eth stuff', e);
+    }
+
+    this.refetchDetails();
+  };
+
+  render() {
+    if (this.state.loading) return <PollCard />;
+    const {
+      mining,
+      creator,
+      question,
+      yesButtonText,
+      noButtonText,
+      yesVotesCount,
+      noVotesCount,
+      hasVoted,
+    } = this.state;
+
+    return (
+      <PollCard>
+        <DeletePollButton onClick={this.onDelete}>+</DeletePollButton>
+        <Question>{question}</Question>
+        {hasVoted ? (
+          <div
+          >{`${yesButtonText}: ${yesVotesCount}, ${noButtonText}: ${noVotesCount}`}</div>
+        ) : (
+          <div>
+            <VoteButton onClick={this.onYesVote}>{yesButtonText}</VoteButton>
+            <VoteButton onClick={this.onNoVote}>{noButtonText}</VoteButton>
+          </div>
+        )}
+        {mining ? <div>Please wait while we handle your request...</div> : null}
+      </PollCard>
+    );
+  }
+}
 
 const PollCard = styled.div`
   display: flex;
