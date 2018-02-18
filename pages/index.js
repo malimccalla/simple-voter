@@ -4,17 +4,17 @@ import React, { Component } from 'react';
 import web3 from '../ethereum/web3';
 import pollFactoryInstance from '../ethereum/pollFactory';
 import pollInstance from '../ethereum/poll';
+
+import CreatePollModal from '../components/CreatePollModal';
 import PollCard from '../components/PollCard';
 
 class App extends Component {
+  state = { modalVisible: false };
+
   static async getInitialProps() {
     const polls = await pollFactoryInstance.methods.getDeployedPolls().call();
     return { polls };
   }
-
-  handleCreatePollClick = () => {
-    console.log('create poll');
-  };
 
   handleDelete = async (creator, index) => {
     const [account] = await web3.eth.getAccounts();
@@ -43,18 +43,22 @@ class App extends Component {
 
   render() {
     const { polls } = this.props;
-    console.log(polls);
 
-    const pollCards = polls.map(address => (
-      <PollCard key={address} address={address} />
-    ));
-
-    return [
-      ...pollCards,
-      <CreatePollButton key="key" onClick={this.handleCreatePollClick}>
-        +
-      </CreatePollButton>,
-    ];
+    return (
+      <div>
+        {polls.map(address => <PollCard key={address} address={address} />)}
+        <CreatePollButton
+          key="key"
+          onClick={() => this.setState({ modalVisible: true })}
+        >
+          +
+        </CreatePollButton>
+        <CreatePollModal
+          close={() => this.setState({ modalVisible: false })}
+          visible={this.state.modalVisible}
+        />
+      </div>
+    );
   }
 }
 
