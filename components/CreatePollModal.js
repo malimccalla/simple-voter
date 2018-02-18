@@ -84,6 +84,7 @@ const Close = styled.button`
   font-size: 4rem;
   font-weight: 300;
   position: absolute;
+  background-color: transparent;
 
   right: 3rem;
   top: 2rem;
