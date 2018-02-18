@@ -12,17 +12,19 @@ let pollFactory;
 let pollAddress;
 let poll;
 
+const gas = '2000000';
+
 beforeEach(async () => {
   accounts = await web3.eth.getAccounts();
   pollFactory = await new web3.eth.Contract(
     JSON.parse(compiledPollFactory.interface)
   )
     .deploy({ data: compiledPollFactory.bytecode })
-    .send({ from: accounts[0], gas: '1000000' });
+    .send({ from: accounts[0], gas });
 
   await pollFactory.methods
-    .createPoll('Is this a great test poll?')
-    .send({ from: accounts[0], gas: '1000000' });
+    .createPoll('Is this a great test poll?', 'Yeah sure', 'Nah')
+    .send({ from: accounts[0], gas });
 
   [pollAddress] = await pollFactory.methods.getDeployedPolls().call();
 
@@ -35,8 +37,8 @@ beforeEach(async () => {
 describe('PollFactory', () => {
   it('stores deployed polls', async () => {
     await pollFactory.methods
-      .createPoll('Is this a great 2nd test poll?')
-      .send({ from: accounts[0], gas: '1000000' });
+      .createPoll('Is this a great 2nd test poll?', 'Yeah', 'No')
+      .send({ from: accounts[0], gas });
 
     const deployedPolls = await pollFactory.methods.getDeployedPolls().call();
     assert.equal(2, deployedPolls.length);
@@ -63,25 +65,25 @@ describe('Poll', () => {
   });
 
   it('allows someone to vote yes and marks them as voter', async () => {
-    await poll.methods.voteYes().send({ from: accounts[0], gas: '1000000' });
+    await poll.methods.voteYes().send({ from: accounts[0], gas });
     const isVoter = await poll.methods.voters(accounts[0]).call();
 
     assert.ok(isVoter);
   });
 
   it('allows someone to vote no and marks them as voter', async () => {
-    await poll.methods.voteNo().send({ from: accounts[0], gas: '1000000' });
+    await poll.methods.voteNo().send({ from: accounts[0], gas });
     const isVoter = await poll.methods.voters(accounts[0]).call();
 
     assert.ok(isVoter);
   });
 
   it('increments yes and no vote counters', async () => {
-    await poll.methods.voteYes().send({ from: accounts[0], gas: '1000000' });
-    await poll.methods.voteNo().send({ from: accounts[1], gas: '1000000' });
-    await poll.methods.voteYes().send({ from: accounts[2], gas: '1000000' });
-    await poll.methods.voteNo().send({ from: accounts[3], gas: '1000000' });
-    await poll.methods.voteNo().send({ from: accounts[4], gas: '1000000' });
+    await poll.methods.voteYes().send({ from: accounts[0], gas });
+    await poll.methods.voteNo().send({ from: accounts[1], gas });
+    await poll.methods.voteYes().send({ from: accounts[2], gas });
+    await poll.methods.voteNo().send({ from: accounts[3], gas });
+    await poll.methods.voteNo().send({ from: accounts[4], gas });
 
     const yesVotesCount = await poll.methods.yesVotesCount().call();
     const noVotesCount = await poll.methods.noVotesCount().call();
@@ -92,8 +94,8 @@ describe('Poll', () => {
 
   it('doesnt allow the same account to vote twice', async () => {
     try {
-      await poll.methods.voteYes().send({ from: accounts[1], gas: '1000000' });
-      await poll.methods.voteNo().send({ from: accounts[1], gas: '1000000' });
+      await poll.methods.voteYes().send({ from: accounts[1], gas });
+      await poll.methods.voteNo().send({ from: accounts[1], gas });
       // if we get to here test should fail
       assert.ok(false);
     } catch (e) {
