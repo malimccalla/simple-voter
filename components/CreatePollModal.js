@@ -5,19 +5,24 @@ import Modal from 'react-modal';
 class CreatePollModal extends Component {
   state = { question: '', yesButtonText: '', noButtonText: '' };
 
+  handleClose = () => {
+    this.setState({ question: '', yesButtonText: '', noButtonText: '' });
+    this.props.close();
+  };
+
   render() {
     const { question, yesButtonText, noButtonText } = this.state;
-    const { close, visible, createNewPoll } = this.props;
+    const { visible, createNewPoll, mining } = this.props;
 
     return (
       <Modal
         contentLabel="loginModal"
         shouldCloseOnOverlayClick
-        onRequestClose={close}
+        onRequestClose={this.handleClose}
         isOpen={visible}
       >
         <Content>
-          <Close onClick={close}>+</Close>
+          <Close onClick={this.handleClose}>+</Close>
           <Title>Create New Poll</Title>
           <InputGroup width="100%">
             <Label>Question*</Label>
@@ -50,6 +55,7 @@ class CreatePollModal extends Component {
           </ButtonInputs>
           <Buttons>
             <Button
+              disabled={!question || !yesButtonText || !noButtonText}
               onClick={() =>
                 createNewPoll(question, yesButtonText, noButtonText)
               }
@@ -57,6 +63,9 @@ class CreatePollModal extends Component {
               Create Poll
             </Button>
           </Buttons>
+          {mining ? (
+            <Status>Please wait while your request is handled...</Status>
+          ) : null}
         </Content>
       </Modal>
     );
@@ -84,6 +93,13 @@ const Close = styled.button`
   transform: rotate(45deg);
 `;
 
+const Status = styled.span`
+  font-size: 1.4rem;
+  margin-top: 2rem;
+
+  font-weight: 300;
+`;
+
 const Label = styled.label`
   font-size: 1.4rem;
   text-transform: uppercase;
@@ -98,10 +114,10 @@ const InputGroup = styled.div`
 `;
 
 const Button = styled.button`
+  background-color: ${props => (props.disabled ? '#999' : '#ee5150')};
   height: 7rem;
   flex: 1;
 
-  background-color: #ee5150;
   border: none;
 
   border-radius: 6px;

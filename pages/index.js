@@ -9,7 +9,7 @@ import CreatePollModal from '../components/CreatePollModal';
 import PollCard from '../components/PollCard';
 
 class App extends Component {
-  state = { modalVisible: false, polls: [] };
+  state = { modalVisible: false, polls: [], mining: false };
 
   componentDidMount() {
     this.fetchPolls();
@@ -52,7 +52,7 @@ class App extends Component {
   };
 
   createNewPoll = async (question, yesButtonText, noButtonText) => {
-    console.log(question, yesButtonText, noButtonText);
+    this.setState({ mining: true });
     const [account] = await web3.eth.getAccounts();
 
     try {
@@ -61,9 +61,10 @@ class App extends Component {
         .send({ from: account });
 
       this.fetchPolls();
-      this.setState({ modalVisible: false });
+      this.setState({ modalVisible: false, mining: false });
     } catch (e) {
       console.log('Something went wrong :(');
+      this.setState({ mining: false });
     }
   };
 
@@ -88,6 +89,7 @@ class App extends Component {
           close={() => this.setState({ modalVisible: false })}
           visible={this.state.modalVisible}
           createNewPoll={this.createNewPoll}
+          mining={this.state.mining}
         />
       </div>
     );
