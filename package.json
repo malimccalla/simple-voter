@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "next",
+    "build": "next build",
+    "start": "NODE_ENV=production next start",
     "test": "mocha ./ethereum/test --watch",
     "compile": "node ./ethereum/compile.js"
   },
